@@ -30,8 +30,8 @@ export default function SideNav() {
 						key={index}
 						className={`${
 							path === item.path
-								? 'bg-primary text-white'
-								: 'hover:bg-primary hover:text-white'
+								? 'bg-primary text-secondary'
+								: 'hover:bg-primary hover:text-secondary'
 						} flex m-2 mr-2 p-2  rounded-lg cursor-pointer`}
 					>
 						<Link href={item.path} className="flex">
