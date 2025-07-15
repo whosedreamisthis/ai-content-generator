@@ -32,14 +32,16 @@ export default function SideNav() {
 							path === item.path
 								? 'bg-primary text-white'
 								: 'hover:bg-primary hover:text-white'
-						} flex m-2 mr-4 p-2  rounded-lg cursor-pointer`}
+						} flex m-2 mr-2 p-2  rounded-lg cursor-pointer`}
 					>
-						<Link href={item.path}>
-							<div className="flex gap-4">
+						<div className="flex gap-4 justify-center items-center md:justify-start w-full">
+							<Link href={item.path} className="flex">
 								<item.icon />
-								<span className="ml-2">{item.name}</span>
-							</div>
-						</Link>
+								<span className="ml-2 hidden md:inline">
+									{item.name}
+								</span>
+							</Link>
+						</div>
 					</div>
 				);
 			})}
