@@ -1,13 +1,15 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { runAI } from '@/actions/ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import ReactMarkdown from 'react-markdown';
 export default function Home() {
 	const [response, setResponse] = useState<string>('');
 	const [loading, setLoading] = useState(false);
 	const [prompt, setPrompt] = useState('');
+
 	const handleClick = async (e: any) => {
 		e.preventDefault();
 		console.log('handleClick');
@@ -25,7 +27,6 @@ export default function Home() {
 			setLoading(false);
 		}
 	};
-
 	return (
 		<>
 			<form className="m-10" onSubmit={handleClick}>
@@ -50,7 +51,13 @@ export default function Home() {
 					<CardTitle>AI Response</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div>{loading ? 'Loading...' : response}</div>
+					{loading ? (
+						<div>Loading...</div>
+					) : (
+						<ReactMarkdown>{response}</ReactMarkdown>
+					)}
+
+					<ReactMarkdown></ReactMarkdown>
 				</CardContent>
 			</Card>
 		</>
