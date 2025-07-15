@@ -3,6 +3,7 @@ import TopNav from '@/components/nav/top-nav';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
+import { ThemeProvider } from '@/components/theme-provider';
 const geistSans = Geist({
 	variable: '--font-geist-sans',
 	subsets: ['latin'],
@@ -29,10 +30,18 @@ export default function RootLayout({
 				<body
 					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 				>
-					<header className="flex justify-end items-center p-4 gap-4 h-16">
-						<TopNav />
-					</header>
-					<main>{children}</main>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<header className="flex justify-end items-center p-4 gap-4 h-16">
+							<TopNav />
+						</header>
+
+						<main>{children}</main>
+					</ThemeProvider>
 				</body>
 			</html>
 		</ClerkProvider>

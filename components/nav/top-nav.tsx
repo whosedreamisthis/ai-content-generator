@@ -9,7 +9,7 @@ import {
 	useUser,
 } from '@clerk/nextjs';
 import Link from 'next/link';
-
+import { ThemeToggle } from './theme-toggle';
 export default function TopNav() {
 	const { isSignedIn, user } = useUser();
 	return (
@@ -18,6 +18,7 @@ export default function TopNav() {
 			style={{ width: '100vw' }}
 		>
 			<Link href="/">AI</Link>
+
 			<div className="flex items-center gap-3">
 				{isSignedIn && (
 					<Link href="/dashboard" className="mr-2">
@@ -35,6 +36,9 @@ export default function TopNav() {
 				<SignedIn>
 					<UserButton />
 				</SignedIn>
+				<div className="ml-2">
+					<ThemeToggle />
+				</div>
 			</div>
 		</nav>
 	);
