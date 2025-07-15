@@ -12,11 +12,9 @@ export default function Home() {
 
 	const handleClick = async (e: any) => {
 		e.preventDefault();
-		console.log('handleClick');
 		setLoading(true);
 		try {
 			const data: any = await runAI(prompt);
-			console.log('data', data);
 			setResponse(data); // Set the response from the AI call
 		} catch (err) {
 			console.error('Error calling Server Action:', err); // Use console.error for errors
