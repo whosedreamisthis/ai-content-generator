@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Loader2Icon } from 'lucide-react';
+import { ArrowLeft, Copy, Loader2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +13,7 @@ import { runAI } from '@/actions/ai';
 // --- Imports for Tiptap Editor ---
 import dynamic from 'next/dynamic';
 import { TiptapEditorRef } from '@/components/tiptap-editor';
+import toast from 'react-hot-toast';
 // --- End Imports for Tiptap Editor ---
 
 // --- Imports for Markdown Handling ---
@@ -96,6 +97,7 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		} catch (error) {
 			console.error('Error generating content:', error);
 			setGeneratedContentMarkdown('An error occurred. Please try again.');
+			toast.error('Failed to generate content. Please try again.'); // Add error toast
 		} finally {
 			setLoading(false);
 		}
@@ -115,8 +117,17 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 	const handleCopyMarkdownToClipboard = () => {
 		if (editorRef.current) {
 			const markdownContent = editorRef.current.getMarkdown();
-			navigator.clipboard.writeText(markdownContent);
-			alert('Editor content (Markdown) copied to clipboard!');
+			navigator.clipboard
+				.writeText(markdownContent)
+				.then(() => {
+					toast.success('Content copied to clipboard!'); // Success toast
+				})
+				.catch((err) => {
+					console.error('Failed to copy text: ', err);
+					toast.error('Failed to copy content to clipboard.'); // Error toast
+				});
+		} else {
+			toast.error('Editor not ready yet.'); // Inform user if editorRef is null
 		}
 	};
 
@@ -135,75 +146,84 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 	}
 
 	return (
-		<div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5 py-8">
-			<div className="col-span-1 bg-slate-100 dark:bg-slate-900 rounded-md border p-5">
-				<div className="flex flex-col gap-3 mb-6">
-					<Image src={t.icon} alt={t.name} width={50} height={50} />
-					<h2 className="font-medium text-lg">{t.name}</h2>
-					<p className="text-gray-500 text-sm">{t.desc}</p>
-				</div>
-				<form className="mt-6" onSubmit={handleSubmit}>
-					{t.form.map((item) => (
-						<div
-							key={item.name}
-							className="my-2 flex flex-col gap-2 mb-7"
-						>
-							<label className="font-bold text-sm pb-1">
-								{item.label}
-							</label>
-							{item.field === 'input' ? (
-								<Input
-									onChange={handleChange}
-									name={item.name}
-									required={item.required}
-									value={prompt}
-								/>
-							) : (
-								<Textarea
-									onChange={handleChange}
-									name={item.name}
-									required={item.required}
-									value={prompt}
-								/>
-							)}
-						</div>
-					))}
-					<Button
-						type="submit"
-						className="w-full py-6 mt-4"
-						disabled={loading}
-					>
-						{loading ? (
-							<Loader2Icon className="animate-spin mr-2" />
-						) : (
-							'Generate content'
-						)}
+		<div className="mr-4">
+			<div className="flex justify-between mt-5 mb-0">
+				<Link href="/dashboard">
+					<Button>
+						<ArrowLeft /> <span className="ml-2">Back</span>
 					</Button>
-				</form>
-			</div>
-			<div className="col-span-2 bg-slate-100 dark:bg-slate-900 rounded-md border p-5">
-				<h2 className="font-medium text-lg mb-4">
-					Generated Content (Editable)
-				</h2>
-				<TiptapEditor
-					ref={editorRef}
-					initialContentMarkdown={
-						generatedContentMarkdown ||
-						'Generated content will appear here.'
-					}
-					// The onContentUpdate prop can still be useful if you want to react to *any* editor change (user or programmatic)
-					// For example, to save content automatically or display a word count.
-					// However, for simply displaying markdown in page.tsx, it's less critical now.
-					// onContentUpdate={(html) => console.log('Editor HTML updated:', html)}
-				/>
-
-				{/* Button to copy Markdown (now uses the editor's internal markdown conversion) */}
-				<Button
-					onClick={handleCopyMarkdownToClipboard}
-					className="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-				>
-					Copy Markdown to Clipboard
+				</Link>
+				<Button onClick={handleCopyMarkdownToClipboard}>
+					<Copy /> <span className="ml-2">Copy</span>
 				</Button>
+			</div>
+			<div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-5 py-8">
+				<div className="col-span-1 bg-slate-100 dark:bg-slate-900 rounded-md border p-5">
+					<div className="flex flex-col gap-3 mb-6">
+						<Image
+							src={t.icon}
+							alt={t.name}
+							width={50}
+							height={50}
+						/>
+						<h2 className="font-medium text-lg">{t.name}</h2>
+						<p className="text-gray-500 text-sm">{t.desc}</p>
+					</div>
+					<form className="mt-6" onSubmit={handleSubmit}>
+						{t.form.map((item) => (
+							<div
+								key={item.name}
+								className="my-2 flex flex-col gap-2 mb-7"
+							>
+								<label className="font-bold text-sm pb-1">
+									{item.label}
+								</label>
+								{item.field === 'input' ? (
+									<Input
+										onChange={handleChange}
+										name={item.name}
+										required={item.required}
+										value={prompt}
+									/>
+								) : (
+									<Textarea
+										onChange={handleChange}
+										name={item.name}
+										required={item.required}
+										value={prompt}
+									/>
+								)}
+							</div>
+						))}
+						<Button
+							type="submit"
+							className="w-full py-6 mt-4"
+							disabled={loading}
+						>
+							{loading ? (
+								<Loader2Icon className="animate-spin mr-2" />
+							) : (
+								'Generate content'
+							)}
+						</Button>
+					</form>
+				</div>
+				<div className="col-span-2 bg-slate-100 dark:bg-slate-900 rounded-md border p-5">
+					<h2 className="font-medium text-lg mb-4">
+						Generated Content (Editable)
+					</h2>
+					<TiptapEditor
+						ref={editorRef}
+						initialContentMarkdown={
+							generatedContentMarkdown ||
+							'Generated content will appear here.'
+						}
+						// The onContentUpdate prop can still be useful if you want to react to *any* editor change (user or programmatic)
+						// For example, to save content automatically or display a word count.
+						// However, for simply displaying markdown in page.tsx, it's less critical now.
+						// onContentUpdate={(html) => console.log('Editor HTML updated:', html)}
+					/>
+				</div>
 			</div>
 		</div>
 	);

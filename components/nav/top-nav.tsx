@@ -10,6 +10,8 @@ import {
 } from '@clerk/nextjs';
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
+import { Toaster } from 'react-hot-toast';
+
 export default function TopNav() {
 	const { isSignedIn, user } = useUser();
 	return (
@@ -17,6 +19,7 @@ export default function TopNav() {
 			className="flex gap-x-14 flex-row justify-between items-center p-2 shadow"
 			style={{ width: '100vw' }}
 		>
+			<Toaster />
 			<Link href="/">AI</Link>
 
 			<div className="flex items-center gap-3">
