@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Divide } from 'lucide-react';
@@ -25,6 +26,19 @@ export interface Form {
 }
 export default function page({ params }: { params: { slug: string } }) {
 	const t = template.find((item) => item.slug === params.slug) as Template;
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		console.log('submitteed');
+	};
+
+	const handleChange = (
+		e:
+			| React.ChangeEvent<HTMLInputElement>
+			| React.ChangeEvent<HTMLTextAreaElement>
+	) => {
+		e.preventDefault();
+		console.log(e.target.value);
+	};
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5">
 			<div className="col-span-1 bg-slate-100 dark:bg-slate-900 rounded-md border p-5">
@@ -33,7 +47,7 @@ export default function page({ params }: { params: { slug: string } }) {
 					<h2 className="font-medium text-lg">{t.name}</h2>
 					<p className="text-gray-500">{t.desc}</p>
 				</div>
-				<form className="mt-6">
+				<form className="mt-6" onSubmit={handleSubmit}>
 					{t.form.map((item) => (
 						<div
 							key={item.name}
@@ -44,17 +58,22 @@ export default function page({ params }: { params: { slug: string } }) {
 							</label>
 							{item.field === 'input' ? (
 								<Input
+									onChange={handleChange}
 									name={item.name}
 									required={item.required}
 								/>
 							) : (
 								<Textarea
+									onChange={handleChange}
 									name={item.name}
 									required={item.required}
 								/>
 							)}
 						</div>
 					))}
+					<Button type="submit" className="w-full py-6">
+						Generate Content
+					</Button>
 				</form>
 			</div>
 		</div>
