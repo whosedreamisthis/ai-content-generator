@@ -24,7 +24,13 @@ export interface Form {
 	name: string;
 	required: boolean;
 }
-export default function page({ params }: { params: { slug: string } }) {
+
+interface TemplatePageProps {
+	params: {
+		slug: string;
+	};
+}
+export default function page({ params }: any) {
 	const t = template.find((item) => item.slug === params.slug) as Template;
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
