@@ -54,8 +54,6 @@ export default function Home() {
 					) : (
 						<ReactMarkdown>{response}</ReactMarkdown>
 					)}
-
-					<ReactMarkdown></ReactMarkdown>
 				</CardContent>
 			</Card>
 		</>
