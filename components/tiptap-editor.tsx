@@ -1,67 +1,82 @@
 // components/TiptapEditor.tsx
 'use client';
 
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
+import React, {
+	forwardRef,
+	useEffect,
+	useImperativeHandle,
+	useState,
+} from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { marked } from 'marked'; // Ensure you have 'marked' installed: npm install marked
+import { marked } from 'marked';
+import TurndownService from 'turndown'; // Import TurndownService
+
+// Initialize TurndownService once
+const turndownService = new TurndownService();
 
 // Define the shape of the ref that can be passed to this component
 export interface TiptapEditorRef {
 	getHTML: () => string;
 	getJSON: () => Record<string, any>;
 	setHTML: (html: string) => void;
+	getMarkdown: () => string; // Add getMarkdown method
+	setMarkdown: (markdown: string) => void; // Add setMarkdown method
 }
 
 interface TiptapEditorProps {
-	initialContentMarkdown?: string; // This prop now explicitly expects Markdown
-	onContentUpdate?: (html: string) => void; // Editor still outputs HTML
+	initialContentMarkdown?: string;
+	onContentUpdate?: (html: string) => void;
 }
 
 const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 	({ initialContentMarkdown = '', onContentUpdate }, ref) => {
-		// IMPORTANT: The `content` prop of useEditor is for initial setup.
-		// If you always want to update based on `initialContentMarkdown`,
-		// the useEffect below is the primary mechanism.
-		// For the initial content, we pass the parsed markdown directly.
+		const [activeTab, setActiveTab] = useState<
+			'editor' | 'markdown' | 'raw'
+		>('editor'); // New state for active tab
+		const [rawContent, setRawContent] = useState(''); // New state for raw content
+
 		const initialHtmlForEditor = marked.parse(initialContentMarkdown);
 
 		const editor = useEditor({
-			immediatelyRender: false, // Essential for Next.js SSR
-			extensions: [
-				StarterKit,
-				// Add your other extensions here, e.g., MapNode
-			],
-			content: initialHtmlForEditor, // Set initial content on editor creation
+			immediatelyRender: false,
+			extensions: [StarterKit],
+			content: initialHtmlForEditor,
 			editorProps: {
 				attributes: {
-					class: 'prose dark:prose-invert min-h-[150px] p-4 border rounded-b-md focus:outline-none',
+					class: 'prose dark:prose-invert min-h-[150px] p-4 focus:outline-none', // Removed border/rounded classes here
 				},
 			},
 			onUpdate: ({ editor }) => {
-				// This callback fires whenever the editor's content changes (user typing, programmatically, etc.)
 				if (onContentUpdate) {
-					onContentUpdate(editor.getHTML()); // Pass current HTML content to parent
+					onContentUpdate(editor.getHTML());
 				}
+				// Update raw content whenever editor content changes (to keep Markdown/Raw tabs in sync)
+				setRawContent(turndownService.turndown(editor.getHTML()));
 			},
-			// onDestroy: () => {
-			//   console.log('Editor destroyed'); // Good for debugging unmounts
-			// }
 		});
 
-		// Expose methods to the parent component via ref
 		useImperativeHandle(ref, () => ({
 			getHTML: () => editor?.getHTML() || '',
 			getJSON: () => editor?.getJSON() || {},
 			setHTML: (html: string) => {
 				if (editor) {
-					editor.commands.setContent(html, false); // false = don't update selection/history
+					editor.commands.setContent(html); // Removed 'false' to fix cursor/formatting
+					setRawContent(turndownService.turndown(html)); // Also update raw content when setting HTML
+				}
+			},
+			getMarkdown: () => {
+				return editor ? turndownService.turndown(editor.getHTML()) : '';
+			},
+			setMarkdown: (markdown: string) => {
+				if (editor) {
+					const html = marked.parse(markdown);
+					editor.commands.setContent(html); // Removed 'false' to fix cursor/formatting
+					setRawContent(markdown); // Set raw content directly
 				}
 			},
 		}));
 
-		// Effect to update editor content when initialContentMarkdown prop changes from parent.
-		// This is crucial for when the AI returns new content.
 		useEffect(() => {
 			if (
 				editor &&
@@ -69,21 +84,33 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 				initialContentMarkdown !== undefined
 			) {
 				const newHtmlToSet = marked.parse(initialContentMarkdown);
-
-				// Only update if the content actually needs to change.
-				// This prevents unnecessary re-renders or adding to the undo history
-				// if the incoming prop is the same as what's already in the editor.
 				if (editor.getHTML() !== newHtmlToSet) {
-					editor.commands.setContent(newHtmlToSet, false);
-					// console.log("Editor content updated via prop change:", newHtmlToSet); // Debugging
+					editor.commands.setContent(newHtmlToSet); // Removed 'false' to fix cursor/formatting
+					setRawContent(initialContentMarkdown); // Initialize raw content with the prop
 				}
 			}
-		}, [initialContentMarkdown, editor]); // Re-run effect if initialContentMarkdown or editor instance changes
+		}, [initialContentMarkdown, editor]);
 
-		// Simple Menu Bar (you'll expand this later for more features)
-		const MenuBar = () => {
+		// Handle changes in the raw content textarea
+		const handleRawContentChange = (
+			e: React.ChangeEvent<HTMLTextAreaElement>
+		) => {
+			setRawContent(e.target.value);
+		};
+
+		// Apply raw content to editor when switching back to editor tab
+		useEffect(() => {
+			if (editor && activeTab === 'editor' && rawContent) {
+				const htmlFromRaw = marked.parse(rawContent);
+				if (editor.getHTML() !== htmlFromRaw) {
+					editor.commands.setContent(htmlFromRaw); // Removed 'false' to fix cursor/formatting
+				}
+			}
+		}, [activeTab, editor, rawContent]);
+
+		const TopMenuBar = () => {
 			if (!editor) {
-				return null; // Don't render menu bar until editor is initialized
+				return null;
 			}
 
 			return (
@@ -161,7 +188,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 								.focus()
 								.toggleHeading({ level: 2 })
 								.run()
-						} // Added disabled check
+						}
 						className={`p-1 rounded ${
 							editor.isActive('heading', { level: 2 })
 								? 'bg-gray-200 dark:bg-gray-700'
@@ -200,10 +227,76 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
 			);
 		};
 
+		const BottomTabControls = () => {
+			if (!editor) {
+				return null;
+			}
+
+			return (
+				<div className="flex flex-wrap gap-2 p-2 border-t rounded-b-md bg-gray-50 dark:bg-gray-800">
+					<button
+						onClick={() => setActiveTab('editor')}
+						className={`p-1 rounded ${
+							activeTab === 'editor'
+								? 'bg-gray-200 dark:bg-gray-700'
+								: ''
+						}`}
+					>
+						Editor
+					</button>
+					<button
+						onClick={() => {
+							setActiveTab('markdown');
+							setRawContent(
+								turndownService.turndown(editor.getHTML())
+							);
+						}}
+						className={`p-1 rounded ${
+							activeTab === 'markdown'
+								? 'bg-gray-200 dark:bg-gray-700'
+								: ''
+						}`}
+					>
+						Markdown
+					</button>
+					<button
+						onClick={() => {
+							setActiveTab('raw');
+							setRawContent(editor.getHTML());
+						}}
+						className={`p-1 rounded ${
+							activeTab === 'raw'
+								? 'bg-gray-200 dark:bg-gray-700'
+								: ''
+						}`}
+					>
+						Raw HTML
+					</button>
+				</div>
+			);
+		};
+
 		return (
 			<div className="border rounded-md shadow-sm">
-				<MenuBar />
-				<EditorContent editor={editor} />
+				{/* Top Menu Bar with formatting controls */}
+				<TopMenuBar />
+
+				{/* Content area */}
+				{activeTab === 'editor' && <EditorContent editor={editor} />}
+				{(activeTab === 'markdown' || activeTab === 'raw') && (
+					<textarea
+						className="w-full min-h-[150px] p-4 border-x border-b-0 rounded-t-none rounded-b-none focus:outline-none font-mono text-sm dark:bg-gray-900 dark:text-gray-100"
+						value={rawContent}
+						onChange={handleRawContentChange}
+						placeholder={
+							activeTab === 'markdown'
+								? 'Markdown content...'
+								: 'Raw HTML content...'
+						}
+					/>
+				)}
+				{/* Bottom Tab Controls */}
+				<BottomTabControls />
 			</div>
 		);
 	}
