@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 import {
 	SignInButton,
@@ -5,16 +6,25 @@ import {
 	SignedIn,
 	SignedOut,
 	UserButton,
+	useUser,
 } from '@clerk/nextjs';
 import Link from 'next/link';
+
 export default function TopNav() {
+	const { isSignedIn, user } = useUser();
+	console.log(isSignedIn, user);
 	return (
 		<nav
 			className="flex gap-x-14 flex-row justify-between items-center p-2 shadow"
 			style={{ width: '100vw' }}
 		>
 			<Link href="/">AI</Link>
-			<div>
+			<div className="flex items-center gap-3">
+				{isSignedIn && (
+					<Link href="/dashboard" className="mr-2">
+						{`${user.firstName}'s Dashboard`}
+					</Link>
+				)}
 				<SignedOut>
 					<SignInButton />
 					<SignUpButton>
