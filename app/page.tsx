@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { runAI } from '@/actions/ai';
+import { Button } from '@/components/ui/button';
 import './globals.css';
 export default function Home() {
 	const [response, setResponse] = useState<string>('first');
@@ -31,13 +32,13 @@ export default function Home() {
 				value={prompt}
 				onChange={(e) => setPrompt(e.target.value)}
 			/>
-			<button
+			<Button
 				onClick={handleClick}
 				disabled={loading}
 				style={{ backgroundColor: 'red' }}
 			>
 				Ask AI
-			</button>
+			</Button>
 			<div>{loading ? 'Loading...' : response}</div>
 		</>
 	);
