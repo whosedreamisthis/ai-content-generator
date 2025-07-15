@@ -3,11 +3,13 @@ import { useState } from 'react';
 import { runAI } from '@/actions/ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 export default function Home() {
-	const [response, setResponse] = useState<string>('first');
+	const [response, setResponse] = useState<string>('');
 	const [loading, setLoading] = useState(false);
 	const [prompt, setPrompt] = useState('');
-	const handleClick = async () => {
+	const handleClick = async (e: any) => {
+		e.preventDefault();
 		console.log('handleClick');
 		setLoading(true);
 		try {
@@ -26,23 +28,31 @@ export default function Home() {
 
 	return (
 		<>
-			{/* Display the response state, not a direct call to runAI */}
-			<Input
-				className="m-5"
-				type="text"
-				value={prompt}
-				onChange={(e) => setPrompt(e.target.value)}
-			/>
-			<Button
-				className="m-5 p-4"
-				variant="default"
-				size="sm"
-				onClick={handleClick}
-				disabled={loading}
-			>
-				Ask AI
-			</Button>
-			<div>{loading ? 'Loading...' : response}</div>
+			<form className="m-10" onSubmit={handleClick}>
+				<Input
+					type="text"
+					value={prompt}
+					placeholder="Ask AI something."
+					onChange={(e) => setPrompt(e.target.value)}
+				/>
+				<Button
+					className="mt-10 p-4"
+					variant="default"
+					size="sm"
+					type="submit"
+					disabled={loading}
+				>
+					Ask AI
+				</Button>
+			</form>
+			<Card className="m-10">
+				<CardHeader>
+					<CardTitle>AI Response</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div>{loading ? 'Loading...' : response}</div>
+				</CardContent>
+			</Card>
 		</>
 	);
 }
