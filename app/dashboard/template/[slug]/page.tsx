@@ -1,12 +1,14 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Divide } from 'lucide-react';
+import { ArrowLeft, Loader2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import template from '@/utils/template';
 import Image from 'next/image';
+import { runAI } from '@/actions/ai';
+import ReactMarkdown from 'react-markdown';
 
 export interface Template {
 	name: string;
@@ -30,11 +32,29 @@ interface TemplatePageProps {
 		slug: string;
 	};
 }
-export default function page({ params }: any) {
-	const t = template.find((item) => item.slug === params.slug) as Template;
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+export default function Page({ params: initialParams }: any) {
+	// Use React.use() directly on the params object.
+	// Next.js sets up `params` so it's compatible with React.use() in this context.
+	const resolvedParams = React.use(initialParams) as { slug: string };
+	const { slug } = resolvedParams;
+
+	const [prompt, setPrompt] = React.useState('');
+	const [content, setContent] = React.useState('');
+	const [loading, setLoading] = React.useState(false);
+
+	const t = template.find((item) => item.slug === slug) as Template;
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log('submitteed');
+		setLoading(true);
+		try {
+			const response: any = await runAI(t.aiPrompt + prompt);
+			setContent(response);
+			console.log(response);
+		} catch (error) {
+			setContent('An error occured. Please try again.');
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const handleChange = (
@@ -43,7 +63,7 @@ export default function page({ params }: any) {
 			| React.ChangeEvent<HTMLTextAreaElement>
 	) => {
 		e.preventDefault();
-		console.log(e.target.value);
+		setPrompt(e.target.value);
 	};
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-3 gap-5 px-5">
@@ -77,11 +97,22 @@ export default function page({ params }: any) {
 							)}
 						</div>
 					))}
-					<Button type="submit" className="w-full py-6">
-						Generate Content
+					<Button
+						type="submit"
+						className="w-full py-6"
+						disabled={loading}
+					>
+						{loading ? (
+							<Loader2Icon className="animate-spin mr-2" />
+						) : (
+							'Generate content'
+						)}
 					</Button>
 				</form>
 			</div>
+			{/* <ReactMarkdown> */}
+			<div className="col-span-2">{content}</div>
+			{/* </ReactMarkdown> */}
 		</div>
 	);
 }
