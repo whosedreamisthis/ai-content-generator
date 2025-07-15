@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { runAI } from '@/actions/ai';
 import { Button } from '@/components/ui/button';
-import './globals.css';
+import { Input } from '@/components/ui/input';
 export default function Home() {
 	const [response, setResponse] = useState<string>('first');
 	const [loading, setLoading] = useState(false);
@@ -27,15 +27,18 @@ export default function Home() {
 	return (
 		<>
 			{/* Display the response state, not a direct call to runAI */}
-			<input
+			<Input
+				className="m-5"
 				type="text"
 				value={prompt}
 				onChange={(e) => setPrompt(e.target.value)}
 			/>
 			<Button
+				className="m-5 p-4"
+				variant="default"
+				size="sm"
 				onClick={handleClick}
 				disabled={loading}
-				style={{ backgroundColor: 'red' }}
 			>
 				Ask AI
 			</Button>
