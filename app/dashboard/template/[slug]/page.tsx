@@ -14,6 +14,8 @@ import { runAI } from '@/actions/ai';
 import dynamic from 'next/dynamic';
 import { TiptapEditorRef } from '@/components/tiptap-editor';
 import toast from 'react-hot-toast';
+import { saveQuery } from '@/actions/ai';
+import { useUser } from '@clerk/nextjs';
 // --- End Imports for Tiptap Editor ---
 
 // --- Imports for Markdown Handling ---
@@ -70,8 +72,9 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		useState('');
 
 	const [loading, setLoading] = useState(false);
-
-	// No longer needed: const [editorContentAsMarkdown, setEditorContentAsMarkdown] = useState('');
+	const { user } = useUser();
+	const email = user?.primaryEmailAddress?.emailAddress || ''; // No longer needed: const [editorContentAsMarkdown, setEditorContentAsMarkdown] = useState('');
+	console.log('email', email);
 
 	const t = template.find((item) => item.slug === slug) as Template;
 
@@ -86,14 +89,15 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		e.preventDefault();
 		setLoading(true);
 		try {
-			const response: string = await runAI(t.aiPrompt + prompt);
+			const response: string = (await runAI(t.aiPrompt + prompt)) || '';
 			setGeneratedContentMarkdown(response);
+			console.log('before saveQuery');
 
+			await saveQuery(t, email, prompt, response);
+			console.log('after saveQuery');
 			// Now, the TiptapEditor's internal logic will handle updating the editor content
 			// based on the `initialContentMarkdown` prop.
 			// The `editorRef.current.setMarkdown(response)` in the useEffect above will ensure this.
-
-			console.log('AI Response (Markdown):', response);
 		} catch (error) {
 			console.error('Error generating content:', error);
 			setGeneratedContentMarkdown('An error occurred. Please try again.');
