@@ -50,3 +50,42 @@ export async function saveQuery(
 		};
 	}
 }
+
+export async function getQueries(
+	email: string,
+	page: number,
+	pageSize: number
+) {
+	try {
+		await db();
+		const skip = (page - 1) * pageSize;
+		const totalQueries = await Query.countDocuments({ email });
+
+		const queries = await Query.find({ email })
+			.skip(skip)
+			.limit(pageSize)
+			.sort({ createdAt: -1 })
+			.lean();
+		// Manually convert the queries to plain objects
+		const plainQueries = queries.map((query) => ({
+			_id: (query._id as string).toString(), // Convert ObjectId to string
+			template: query.template,
+			email: query.email,
+			query: query.query,
+			content: query.content,
+			createdAt: query.createdAt.toISOString(), // Convert Date to ISO string
+			updatedAt: query.updatedAt.toISOString(), // Convert Date to ISO string
+			__v: query.__v,
+		}));
+		return {
+			queries: plainQueries,
+			totalPages: Math.ceil(totalQueries / pageSize),
+		};
+	} catch (err) {
+		return {
+			ok: false,
+			queries: [],
+			totalPages: 0,
+		};
+	}
+}

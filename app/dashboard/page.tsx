@@ -16,7 +16,7 @@ export default function Page() {
 	});
 	return (
 		<div>
-			<div className="p-10 mx-5 mb-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center">
+			<div className="p-10 m-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center">
 				<h1 className="text-xl">
 					What would you like to create today?
 				</h1>
