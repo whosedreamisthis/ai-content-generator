@@ -4,6 +4,8 @@ import { getQueries } from '@/actions/ai';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { Divide, Loader2Icon } from 'lucide-react';
+import QueryTable from '@/components/table/query-table';
+
 export default function Page() {
 	const [queries, setQueries] = useState([]);
 	const [totalPages, setTotalPages] = useState(0);
@@ -74,12 +76,16 @@ export default function Page() {
 		);
 	}
 	return (
-		<div className="p-10 m-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center">
-			<h1 className="text-xl">History</h1>
-			<p className="text-sm text-gray-500">
-				Your previous search history
-			</p>
-			<pre>{queries.length}</pre>
+		<div>
+			<div className="p-10 m-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center">
+				<h1 className="text-xl">History</h1>
+				<p className="text-sm text-gray-500">
+					Your previous search history
+				</p>
+			</div>
+			<div className="p-5 rounded-lg flex flex-col justify-center">
+				<QueryTable data={queries}> </QueryTable>
+			</div>
 			<div className="text-center my-5">
 				{page < totalPages && (
 					<Button

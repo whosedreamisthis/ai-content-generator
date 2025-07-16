@@ -16,6 +16,7 @@ import { TiptapEditorRef } from '@/components/tiptap-editor';
 import toast from 'react-hot-toast';
 import { saveQuery } from '@/actions/ai';
 import { useUser } from '@clerk/nextjs';
+import { Template } from '@/utils/types';
 // --- End Imports for Tiptap Editor ---
 
 // --- Imports for Markdown Handling ---
@@ -26,30 +27,13 @@ import { useUser } from '@clerk/nextjs';
 // import TurndownService from 'turndown'; // No longer needed here
 // --- End Imports for Markdown Handling ---
 
-// --- Define your interfaces/types here (ensure these match your actual data structures) ---
-export interface Template {
-	name: string;
-	slug: string;
-	icon: string;
-	desc: string;
-	category: string;
-	aiPrompt: string;
-	form: Form[];
-}
-
-export interface Form {
-	label: string;
-	field: string;
-	name: string;
-	required: boolean;
-}
+// ---
 
 interface TemplatePageProps {
 	params: {
 		slug: string;
 	};
-}
-// --- End interfaces/types ---
+} // --- End interfaces/types ---
 
 // Initialize TurndownService is no longer needed here as it's handled within TiptapEditor.
 
