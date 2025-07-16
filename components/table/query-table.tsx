@@ -30,13 +30,11 @@ const QueryTable: React.FC<Props> = ({ data }) => {
 			<table className="min-w-full bg-white dark:bg-gray-800 text-sm">
 				<thead>
 					<tr>
-						<th className="py-2 px-4 border-b text-left">
-							TEMPLATE
-						</th>
-						<th className="py-2 px-4 border-b text-left">QUERY</th>
-						<th className="py-2 px-4 border-b text-left">DATE</th>
-						<th className="py-2 px-4 border-b text-left">WORDS</th>
-						<th className="py-2 px-4 border-b text-left">COPY</th>
+						<th className="py-2 px-4  text-left">TEMPLATE</th>
+						<th className="py-2 px-4 text-left">QUERY</th>
+						<th className="py-2 px-4  text-left">DATE</th>
+						<th className="py-2 px-4  text-left">WORDS</th>
+						<th className="py-2 px-4  text-left">COPY</th>
 					</tr>
 				</thead>
 				<tbody>
