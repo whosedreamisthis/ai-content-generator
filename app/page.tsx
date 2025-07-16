@@ -27,35 +27,37 @@ export default function Home() {
 	};
 	return (
 		<>
-			<form className="ml-10 mt-10 w-[80%]" onSubmit={handleClick}>
-				<Input
-					type="text"
-					value={prompt}
-					placeholder="Ask AI something."
-					onChange={(e) => setPrompt(e.target.value)}
-				/>
-				<Button
-					className="mt-10 p-4"
-					variant="default"
-					size="sm"
-					type="submit"
-					disabled={loading}
-				>
-					Ask AI
-				</Button>
-			</form>
-			<Card className="m-10 w-full">
-				<CardHeader>
-					<CardTitle>AI Response</CardTitle>
-				</CardHeader>
-				<CardContent>
-					{loading ? (
-						<div>Loading...</div>
-					) : (
-						<ReactMarkdown>{response}</ReactMarkdown>
-					)}
-				</CardContent>
-			</Card>
+			<div className="flex flex-col m-10 w-full">
+				<form onSubmit={handleClick}>
+					<Input
+						type="text"
+						value={prompt}
+						placeholder="Ask AI something."
+						onChange={(e) => setPrompt(e.target.value)}
+					/>
+					<Button
+						className="mt-10 p-4"
+						variant="default"
+						size="sm"
+						type="submit"
+						disabled={loading}
+					>
+						Ask AI
+					</Button>
+				</form>
+				<Card className="w-full mt-10">
+					<CardHeader>
+						<CardTitle>AI Response</CardTitle>
+					</CardHeader>
+					<CardContent>
+						{loading ? (
+							<div>Loading...</div>
+						) : (
+							<ReactMarkdown>{response}</ReactMarkdown>
+						)}
+					</CardContent>
+				</Card>
+			</div>
 		</>
 	);
 }
