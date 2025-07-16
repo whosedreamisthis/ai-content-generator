@@ -1,9 +1,10 @@
+// page.tsx (For History Page)
 'use client';
 import React, { useState, useEffect } from 'react';
 import { getQueries } from '@/actions/ai';
 import { useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
-import { Divide, Loader2Icon } from 'lucide-react';
+import { Loader2Icon } from 'lucide-react';
 import QueryTable from '@/components/table/query-table';
 
 export default function Page() {
@@ -70,13 +71,16 @@ export default function Page() {
 
 	if (!queries.length) {
 		return (
-			<div className="flex justify-center items-center h-screen">
+			// IMPORTANT: Removed h-screen from here. This was causing the "pop-up" effect.
+			<div className="flex justify-center items-center">
 				<Loader2Icon className="animate-spin mx-2" />
 			</div>
 		);
 	}
 	return (
-		<div>
+		// IMPORTANT: Added w-full to this outermost div to ensure it takes full width of its parent column.
+		// This should resolve the QueryTable width issue.
+		<div className="w-full">
 			<div className="p-10 m-5 rounded-lg bg-slate-200 dark:bg-slate-800 flex flex-col justify-center items-center">
 				<h1 className="text-xl">History</h1>
 				<p className="text-sm text-gray-500">

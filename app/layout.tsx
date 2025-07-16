@@ -1,3 +1,4 @@
+// layout.tsx
 import type { Metadata } from 'next';
 import TopNav from '@/components/nav/top-nav';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -5,6 +6,7 @@ import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from '@/components/theme-provider';
 import { UsageProvider } from '@/context/usage';
+
 const geistSans = Geist({
 	variable: '--font-geist-sans',
 	subsets: ['latin'],
@@ -28,8 +30,9 @@ export default function RootLayout({
 	return (
 		<ClerkProvider>
 			<html lang="en" suppressHydrationWarning>
+				{/* Apply flexbox properties to the body directly */}
 				<body
-					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+					className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
 				>
 					<ThemeProvider
 						attribute="class"
@@ -42,7 +45,11 @@ export default function RootLayout({
 								<TopNav />
 							</header>
 
-							<main>{children}</main>
+							{/* This div takes up the remaining vertical space for the main content */}
+							<div className="flex-1 flex">
+								{/* The children prop here will be your DashboardLayout */}
+								{children}
+							</div>
 						</UsageProvider>
 					</ThemeProvider>
 				</body>
