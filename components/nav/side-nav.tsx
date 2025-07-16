@@ -38,7 +38,14 @@ export default function SideNav() {
 										: 'hover:bg-primary hover:text-secondary'
 								} flex m-2 mr-2 p-2 rounded-lg cursor-pointer`}
 							>
-								<Link href={item.path} className="flex">
+								<Link
+									href={item.path}
+									className={`${
+										path === item.path
+											? 'bg-primary'
+											: ' hover:text-secondary'
+									}`}
+								>
 									<div className="flex gap-4 justify-center items-center md:justify-start w-full">
 										<item.icon />
 										<span className="ml-2 hidden md:inline">
