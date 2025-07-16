@@ -8,7 +8,7 @@ export default function DashboardLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<div className="flex flex-row h-screen gap-4 w-full">
+		<div className="flex flex-row h-screen gap-4 w-full justify-center">
 			{/* SideNav column */}
 			{/* w-1/4 (or your desired fixed width like w-64) for sidebar width */}
 			<div className="w-1/4 h-full">

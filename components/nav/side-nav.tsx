@@ -44,9 +44,10 @@ export default function SideNav() {
 										path === item.path
 											? 'bg-primary'
 											: ' hover:text-secondary'
-									}`}
+									} w-full`}
 								>
-									<div className="flex gap-4 justify-center items-center md:justify-start w-full">
+									{/* Modified this div for alignment */}
+									<div className="flex gap-4 justify-center md:justify-start items-center w-full">
 										<item.icon />
 										<span className="ml-2 hidden md:inline">
 											{item.name}
