@@ -6,6 +6,8 @@ import { useUser } from '@clerk/nextjs';
 
 interface UsageContextType {
 	count: number;
+	openModal: boolean;
+	setOpenModal: any;
 }
 const UsageContext = createContext<UsageContextType | null>(null);
 export const UsageProvider = ({
@@ -14,6 +16,8 @@ export const UsageProvider = ({
 	children: React.ReactNode;
 }>) => {
 	const [count, setCount] = useState(0);
+	const [openModal, setOpenModal] = useState(false);
+
 	const { user } = useUser();
 	const email = user?.primaryEmailAddress?.emailAddress || '';
 
@@ -23,13 +27,19 @@ export const UsageProvider = ({
 		}
 	}, [email]);
 
+	useEffect(() => {
+		if (count > 100) {
+			setOpenModal(true);
+		}
+	}, [count]);
+
 	const fetchUsage = async (email: string) => {
 		const res = await usageCount(email);
 		setCount(res);
 	};
 
 	return (
-		<UsageContext.Provider value={{ count }}>
+		<UsageContext.Provider value={{ count, openModal, setOpenModal }}>
 			{children}
 		</UsageContext.Provider>
 	);

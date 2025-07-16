@@ -11,7 +11,7 @@ import {
 import Link from 'next/link';
 import { ThemeToggle } from './theme-toggle';
 import { Toaster } from 'react-hot-toast';
-
+import { Bot } from 'lucide-react';
 export default function TopNav() {
 	const { isSignedIn, user } = useUser();
 	return (
@@ -20,7 +20,9 @@ export default function TopNav() {
 			style={{ width: '100vw' }}
 		>
 			<Toaster />
-			<Link href="/">AI</Link>
+			<Link href="/">
+				<Bot />
+			</Link>
 
 			<div className="flex items-center gap-3">
 				{isSignedIn && (

@@ -9,6 +9,7 @@ import {
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Usage from '@/components/nav/usage';
+import SignUpModal from '@/components/modal/sign-up-modal';
 
 export default function SideNav() {
 	const path = usePathname();
@@ -62,6 +63,7 @@ export default function SideNav() {
 			{/* The Usage component will be pushed to the bottom by justify-between on the parent */}
 			<div className="pb-20 mt-auto min-h-[100px]">
 				<Usage />
+				<SignUpModal />
 			</div>
 		</div>
 	);
