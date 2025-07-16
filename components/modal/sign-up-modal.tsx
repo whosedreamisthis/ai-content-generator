@@ -44,7 +44,9 @@ export default function SignUpModal() {
 						</p>
 						<div className="m-5 text-center">
 							<Link href="/membership">
-								<Button>Join Membership</Button>
+								<Button className="focus-visible:outline-none focus-visible:ring-0">
+									Join Membership
+								</Button>
 							</Link>
 						</div>
 					</DialogDescription>

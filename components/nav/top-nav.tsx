@@ -23,6 +23,7 @@ export default function TopNav() {
 			<Link href="/">
 				<Bot />
 			</Link>
+			<Link href="/membership">🔥Join free or $9.99/month</Link>
 
 			<div className="flex items-center gap-3">
 				{isSignedIn && (

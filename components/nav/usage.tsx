@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useUsage } from '@/context/usage';
 import { Button } from '@/components/ui/button';
-
+import Link from 'next/link';
 export default function Usage() {
 	const { count } = useUsage();
 	const credits = 10000;
@@ -22,9 +22,11 @@ export default function Usage() {
 					{count} / {credits} credits used
 				</h2>
 			</div>
-			<Button className="w-full my-3" variant="secondary">
-				Upgrade
-			</Button>
+			<Link href="/membership">
+				<Button className="w-full my-3" variant="secondary">
+					Upgrade
+				</Button>
+			</Link>
 		</div>
 	);
 }
