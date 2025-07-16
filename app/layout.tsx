@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from '@/components/theme-provider';
+import { UsageProvider } from '@/context/usage';
 const geistSans = Geist({
 	variable: '--font-geist-sans',
 	subsets: ['latin'],
@@ -36,11 +37,13 @@ export default function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						<header className="flex justify-end items-center p-4 gap-4 h-16">
-							<TopNav />
-						</header>
+						<UsageProvider>
+							<header className="flex justify-end items-center p-4 gap-4 h-16">
+								<TopNav />
+							</header>
 
-						<main>{children}</main>
+							<main>{children}</main>
+						</UsageProvider>
 					</ThemeProvider>
 				</body>
 			</html>

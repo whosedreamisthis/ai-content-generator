@@ -58,7 +58,6 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 	const [loading, setLoading] = useState(false);
 	const { user } = useUser();
 	const email = user?.primaryEmailAddress?.emailAddress || ''; // No longer needed: const [editorContentAsMarkdown, setEditorContentAsMarkdown] = useState('');
-	console.log('email', email);
 
 	const t = template.find((item) => item.slug === slug) as Template;
 
@@ -75,10 +74,9 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		try {
 			const response: string = (await runAI(t.aiPrompt + prompt)) || '';
 			setGeneratedContentMarkdown(response);
-			console.log('before saveQuery');
 
 			await saveQuery(t, email, prompt, response);
-			console.log('after saveQuery');
+
 			// Now, the TiptapEditor's internal logic will handle updating the editor content
 			// based on the `initialContentMarkdown` prop.
 			// The `editorRef.current.setMarkdown(response)` in the useEffect above will ensure this.

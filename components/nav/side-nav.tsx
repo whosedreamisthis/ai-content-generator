@@ -21,7 +21,6 @@ export default function SideNav() {
 		{ name: 'Settings', icon: Settings, path: '/dashboard/settings' },
 	];
 
-	console.log(path);
 	return (
 		<div className="h-screen p-5 shadow-sm border">
 			{menu.map((item, index) => {

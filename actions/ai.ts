@@ -21,14 +21,7 @@ export async function saveQuery(
 	query: string,
 	content: string
 ) {
-	console.log('saveQuery');
-
 	try {
-		console.log('template', template);
-		console.log('email', email);
-		console.log('query', query);
-		console.log('content', content);
-
 		await db();
 		const newQuery = new Query({
 			template,
@@ -37,9 +30,7 @@ export async function saveQuery(
 			content,
 		});
 
-		console.log('saveQuery 2');
 		await newQuery.save();
-		console.log('saveQuery 3');
 		return {
 			ok: true,
 		};
@@ -95,7 +86,7 @@ export async function usageCount(email: string) {
 
 	const currentDate = new Date();
 	const currentYear = currentDate.getFullYear();
-	const currentMonth = currentDate.getMonth();
+	const currentMonth = currentDate.getMonth() + 1;
 
 	const result = await Query.aggregate([
 		{
@@ -113,10 +104,7 @@ export async function usageCount(email: string) {
 			$project: {
 				wordCount: {
 					$size: {
-						$split: [
-							{ $$trim: { input: '$content', chars: ' ' } },
-							' ',
-						],
+						$split: [{ $trim: { input: '$content' } }, ' '],
 					},
 				},
 			},
