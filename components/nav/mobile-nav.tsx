@@ -10,11 +10,13 @@ export default function MobileNav() {
 				<Sheet>
 					<SheetTrigger className="md:hidden">
 						<div className="p-2">
-							<Menu size={50} />
+							<Menu size={30} />
 						</div>
 					</SheetTrigger>
 					<SheetContent side="left" className="w-[300px]">
-						<SideNav />
+						<div className="mt-5">
+							<SideNav />
+						</div>
 					</SheetContent>
 				</Sheet>
 			</div>
