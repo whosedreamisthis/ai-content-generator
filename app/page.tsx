@@ -27,7 +27,7 @@ export default function Home() {
 	};
 	return (
 		<>
-			<form className="m-10" onSubmit={handleClick}>
+			<form className="ml-10 mt-10 w-[80%]" onSubmit={handleClick}>
 				<Input
 					type="text"
 					value={prompt}
@@ -44,7 +44,7 @@ export default function Home() {
 					Ask AI
 				</Button>
 			</form>
-			<Card className="m-10">
+			<Card className="m-10 w-full">
 				<CardHeader>
 					<CardTitle>AI Response</CardTitle>
 				</CardHeader>

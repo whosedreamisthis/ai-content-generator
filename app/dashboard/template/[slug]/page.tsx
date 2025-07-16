@@ -17,6 +17,7 @@ import toast from 'react-hot-toast';
 import { saveQuery } from '@/actions/ai';
 import { useUser } from '@clerk/nextjs';
 import { Template } from '@/utils/types';
+import { useUsage } from '@/context/usage';
 // --- End Imports for Tiptap Editor ---
 
 // --- Imports for Markdown Handling ---
@@ -56,6 +57,7 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		useState('');
 
 	const [loading, setLoading] = useState(false);
+	const { count } = useUsage();
 	const { user } = useUser();
 	const email = user?.primaryEmailAddress?.emailAddress || ''; // No longer needed: const [editorContentAsMarkdown, setEditorContentAsMarkdown] = useState('');
 
