@@ -28,7 +28,7 @@ export const UsageProvider = ({
 	}, [email]);
 
 	useEffect(() => {
-		if (count > 100) {
+		if (count > 10000) {
 			setOpenModal(true);
 		}
 	}, [count]);

@@ -46,9 +46,9 @@ const TiptapEditor = dynamic(
 	}
 );
 
-export default function Page({ params: initialParams }: TemplatePageProps) {
-	const resolvedParams = React.use(initialParams) as { slug: string };
-	const { slug } = resolvedParams;
+// CORRECTED LINE: Directly destructure params
+export default function Page({ params }: TemplatePageProps) {
+	const { slug } = params; // Use params directly
 
 	const editorRef = useRef<TiptapEditorRef>(null);
 
@@ -59,14 +59,14 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 	const [loading, setLoading] = useState(false);
 	const { count } = useUsage();
 	const { user } = useUser();
-	const email = user?.primaryEmailAddress?.emailAddress || ''; // No longer needed: const [editorContentAsMarkdown, setEditorContentAsMarkdown] = useState('');
+	const email = user?.primaryEmailAddress?.emailAddress || '';
 
 	const t = template.find((item) => item.slug === slug) as Template;
 
 	// This useEffect is now simpler, just feeding the AI response to the editor
 	useEffect(() => {
 		if (editorRef.current && generatedContentMarkdown) {
-			editorRef.current.setMarkdown(generatedContentMarkdown); // Use setMarkdown
+			editorRef.current.setMarkdown(generatedContentMarkdown);
 		}
 	}, [generatedContentMarkdown]);
 
@@ -85,7 +85,7 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		} catch (error) {
 			console.error('Error generating content:', error);
 			setGeneratedContentMarkdown('An error occurred. Please try again.');
-			toast.error('Failed to generate content. Please try again.'); // Add error toast
+			toast.error('Failed to generate content. Please try again.');
 		} finally {
 			setLoading(false);
 		}
@@ -99,23 +99,20 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 		setPrompt(e.target.value);
 	};
 
-	// This function is no longer strictly necessary to convert to markdown,
-	// as the TiptapEditor now handles markdown conversion internally for its tabs.
-	// You can keep it if you need to manually get the markdown for some other purpose.
 	const handleCopyMarkdownToClipboard = () => {
 		if (editorRef.current) {
 			const markdownContent = editorRef.current.getMarkdown();
 			navigator.clipboard
 				.writeText(markdownContent)
 				.then(() => {
-					toast.success('Content copied to clipboard!'); // Success toast
+					toast.success('Content copied to clipboard!');
 				})
 				.catch((err) => {
 					console.error('Failed to copy text: ', err);
-					toast.error('Failed to copy content to clipboard.'); // Error toast
+					toast.error('Failed to copy content to clipboard.');
 				});
 		} else {
-			toast.error('Editor not ready yet.'); // Inform user if editorRef is null
+			toast.error('Editor not ready yet.');
 		}
 	};
 
@@ -206,10 +203,6 @@ export default function Page({ params: initialParams }: TemplatePageProps) {
 							generatedContentMarkdown ||
 							'Generated content will appear here.'
 						}
-						// The onContentUpdate prop can still be useful if you want to react to *any* editor change (user or programmatic)
-						// For example, to save content automatically or display a word count.
-						// However, for simply displaying markdown in page.tsx, it's less critical now.
-						// onContentUpdate={(html) => console.log('Editor HTML updated:', html)}
 					/>
 				</div>
 			</div>
