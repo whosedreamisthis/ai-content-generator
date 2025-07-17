@@ -88,7 +88,7 @@ export default function Page() {
 				</p>
 			</div>
 			<div className="p-5 rounded-lg flex flex-col justify-center">
-				<QueryTable data={queries}> </QueryTable>
+				<QueryTable data={queries} />
 			</div>
 			<div className="text-center my-5">
 				{page < totalPages && (

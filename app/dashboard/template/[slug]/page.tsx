@@ -34,6 +34,7 @@ interface TemplatePageProps {
 	params: {
 		slug: string;
 	};
+	searchParams?: { [key: string]: string | string[] | undefined };
 } // --- End interfaces/types ---
 
 // Initialize TurndownService is no longer needed here as it's handled within TiptapEditor.
@@ -47,7 +48,7 @@ const TiptapEditor = dynamic(
 );
 
 // CORRECTED LINE: Directly destructure params
-export default function Page({ params }: TemplatePageProps) {
+export default function Page({ params }: any) {
 	const { slug } = params; // Use params directly
 
 	const editorRef = useRef<TiptapEditorRef>(null);
