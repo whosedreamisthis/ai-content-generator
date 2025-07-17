@@ -4,7 +4,9 @@ import Image from 'next/image';
 import { Button } from '../ui/button';
 import toast from 'react-hot-toast';
 import { SignInButton, useUser } from '@clerk/nextjs';
+import { createCheckoutSession } from '@/actions/stripe';
 import { Divide } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 export default function PlanCard({
 	name,
 	image,
@@ -14,7 +16,31 @@ export default function PlanCard({
 }) {
 	const { isSignedIn, isLoaded } = useUser();
 
-	const handleCheckout = async () => {};
+	const router = useRouter();
+	const handleCheckout = async () => {
+		if (name == 'Free') {
+			router.push('/dashboard');
+			return;
+		} else {
+			try {
+				const response = await createCheckoutSession();
+
+				const { url, error } = response;
+				if (error) {
+					toast.error(error);
+					return;
+				}
+
+				if (url) {
+					window.location.href = url;
+				}
+			} catch (err: any) {
+				toast.error(
+					'An unexpected error occured. Please try again later.'
+				);
+			}
+		}
+	};
 	return (
 		<div className="max-w-sm rounded overflow-hidden shadow-lg m-4 border">
 			<Image
